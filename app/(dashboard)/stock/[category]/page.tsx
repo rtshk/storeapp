@@ -1,13 +1,13 @@
 "use client";
+
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -15,134 +15,87 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StockItem } from "./stock-items";
+
+type item = {
+  id: string;
+  item_name: string;
+  quantity: number;
+  image_url: string;
+  price: number;
+  user_id: string;
+  created_at: string;
+  category_id: string;
+};
 
 export default function Category() {
   const params = useParams();
-  console.log(params);
-  const categoryId = params.category;
-  type category = {
-    id: number;
-    title: string;
-    image: string;
+  const [categoryName, setCategoryName] = useState("");
+  const [items, setItems] = useState<item[]>([]);
+
+  const [itemName, setItemName] = useState<string>("");
+  const [quantity, setQuantity] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
+  const [image, setImage] = useState<File | null>(null);
+
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+
+  const handleAddItem = async () => {
+    const supabase = createClient();
+    const userResult = await supabase.auth.getUser();
+    const { error } = await supabase.from("items").insert({
+      item_name: itemName,
+      quantity: Number(quantity),
+      price: Number(price),
+      category_id: params.category,
+      user_id: userResult.data.user?.id,
+    });
+
+    if (error) {
+      console.error("Insert failed:", error.message);
+    } else {
+      setItemName("");
+      setQuantity("");
+      setPrice("");
+      setImage(null);
+      const itemsResult = await supabase
+        .from("items")
+        .select()
+        .eq("category_id", params.category);
+      if (itemsResult.error) {
+        throw new Error(itemsResult.error.message);
+      }
+      setItems(itemsResult?.data);
+    }
   };
-  const categories: category[] = [
-    {
-      id: 1,
-      title: "Munchies",
-      image: "/stock-category-images/munchies.avif",
-    },
-    {
-      id: 2,
-      title: "Cold Drinks & Juices",
-      image: "/stock-category-images/cold-drinks-juices.avif",
-    },
-    {
-      id: 3,
-      title: "Instant & Frozen Food",
-      image: "/stock-category-images/instant-frozen-food.avif",
-    },
-    {
-      id: 4,
-      title: "Tea, Coffee & Health Drinks",
-      image: "/stock-category-images/tea-coffee-health-drinks.avif",
-    },
-    {
-      id: 5,
-      title: "Bakery & Biscuits",
-      image: "/stock-category-images/bakery-biscuits.avif",
-    },
-    {
-      id: 6,
-      title: "Sweet Tooth",
-      image: "/stock-category-images/sweet-tooth.avif",
-    },
-    {
-      id: 7,
-      title: "Atta, Rice & Dal",
-      image: "/stock-category-images/atta-rice-dal.avif",
-    },
-    {
-      id: 8,
-      title: "Dry Fruits, Masala & Oil",
-      image: "/stock-category-images/dry-fruits-masala-oil.avif",
-    },
-    {
-      id: 9,
-      title: "Sauces & Spreads",
-      image: "/stock-category-images/sauces-spreads.avif",
-    },
-    {
-      id: 10,
-      title: "Chicken, Meat & Fish",
-      image: "/stock-category-images/chicken-meat-fish.avif",
-    },
-    {
-      id: 11,
-      title: "Paan Corner",
-      image: "/stock-category-images/paan-corner.avif",
-    },
-    {
-      id: 12,
-      title: "Organic & Premium",
-      image: "/stock-category-images/organic-premium.avif",
-    },
-    {
-      id: 13,
-      title: "Baby Care",
-      image: "/stock-category-images/baby-care.avif",
-    },
-    {
-      id: 14,
-      title: "Pharma & Wellness",
-      image: "/stock-category-images/pharma-wellness.avif",
-    },
-    {
-      id: 15,
-      title: "Cleaning Essentials",
-      image: "/stock-category-images/cleaning-essentials.avif",
-    },
-    {
-      id: 16,
-      title: "Home & Office",
-      image: "/stock-category-images/home-office.avif",
-    },
-    {
-      id: 17,
-      title: "Personal Care",
-      image: "/stock-category-images/personal-care.avif",
-    },
-    {
-      id: 18,
-      title: "Pet Care",
-      image: "/stock-category-images/pet-care.avif",
-    },
-    {
-      id: 19,
-      title: "Fashion & Accessories",
-      image: "/stock-category-images/fashion-accessories.avif",
-    },
-    {
-      id: 20,
-      title: "Vegetables & Fruits",
-      image: "/stock-category-images/vegetables-fruits.avif",
-    },
-    {
-      id: 21,
-      title: "Dairy & Breakfast",
-      image: "/stock-category-images/dairy-breakfast.avif",
-    },
-  ];
-  const [categoryName, setCategoryName] = useState<string | null>(null);
 
   useEffect(() => {
-    for (const category of categories) {
-      console.log(categoryId);
-      if (category.id == Number(categoryId)) {
-        setCategoryName(category.title);
+    const fetchCategory = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("category")
+        .select("category_name")
+        .eq("id", params.category)
+        .single();
+
+      if (data) {
+        setCategoryName(data.category_name);
+      } else {
+        console.error("Error fetching category:", error);
       }
-    }
-  }, []);
-  console.log(categoryName);
+      const itemsResult = await supabase
+        .from("items")
+        .select()
+        .eq("category_id", params.category);
+      if (itemsResult.error) {
+        throw new Error(itemsResult.error.message);
+      }
+      setItems(itemsResult?.data);
+    };
+
+    fetchCategory();
+  }, [params.category]);
 
   return (
     <div>
@@ -150,11 +103,22 @@ export default function Category() {
         {categoryName}
       </div>
 
-      <Dialog>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 px-2 pt-2 mb-28">
+        {items.map((item) => (
+          <StockItem
+            key={item.id}
+            itemName={item.item_name}
+            quantity={item.quantity}
+            price={item.price}
+          />
+        ))}
+      </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
         <form>
           <DialogTrigger asChild>
-            <Button variant="outline" className="fixed bottom-20 right-4">
-              <Plus />
+            <Button variant="outline" className="fixed bottom-18 right-4">
+              <Plus className="mr-1" />
               Add
             </Button>
           </DialogTrigger>
@@ -164,22 +128,41 @@ export default function Category() {
             </DialogHeader>
             <div className="grid gap-4">
               <div className="grid gap-3">
-                <Label htmlFor="name-1">Item Name</Label>
-                <Input id="name-1" name="name" />
+                <Label htmlFor="item-name">Item Name</Label>
+                <Input
+                  id="item-name"
+                  name="name"
+                  value={itemName}
+                  onChange={(e) => setItemName(e.target.value)}
+                />
               </div>
-            <div className="flex justify-between">
-            <div className="grid gap-3 w-[50%]">
-                <Label htmlFor="username-1">Quantity</Label>
-                <Input id="username-1" className="w-16" />
-              </div>              
+              <div className="flex justify-between">
+                <div className="grid gap-3 w-[50%]">
+                  <Label htmlFor="quantity">Quantity</Label>
+                  <Input
+                    id="quantity"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-3 w-[50%]">
+                  <Label htmlFor="image-upload">Upload Image</Label>
+                </div>
+              </div>
               <div className="grid gap-3 w-[50%]">
-                <Label htmlFor="username-1">Upload Image</Label>
-                <Button className="w-16 h-8 text-xs" variant="outline">Select</Button>
+                <Label htmlFor="price">Price</Label>
+                <Input
+                  id="price"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                />
               </div>
-            </div>
             </div>
             <DialogFooter>
-              <Button type="submit" className="w-18" >
+              <Button type="submit" className="w-18" onClick={()=>{
+                handleAddItem();
+                setIsDialogOpen(false);
+              }}>
                 Submit
               </Button>
             </DialogFooter>

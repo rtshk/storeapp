@@ -1,87 +1,92 @@
 "use client";
-import { Calendar, Home, Inbox, LogOut, Search, Settings, X } from "lucide-react";
+import {
+  Box,
+  ChartColumn,
+  ClipboardList,
+  Home,
+  LogOut,
+  Plus,
+} from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { createClient } from "@/lib/supabase/client";
-import { redirect } from "next/navigation";
-
-// Menu items.
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 const items = [
   {
     title: "Home",
-    url: "#",
+    url: "/",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Stock",
+    url: "/stock",
+    icon: Box,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Analytics",
+    url: "/",
+    icon: ChartColumn,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    title: "Billing",
+    url: "/bill",
+    icon: ClipboardList,
   },
 ];
 
 export function AppSidebar() {
-  const { setOpen, setOpenMobile } = useSidebar();
+  const router = useRouter();
+  const {isMobile, setOpenMobile} = useSidebar()
   async function handleLogout() {
     const supabase = createClient();
     const { error } = await supabase.auth.signOut();
     if (error) {
       throw new Error(error.message);
     }
-    redirect("/auth/login");
+    router.push("/auth/login");
   }
+  function handleCloseSidebarMobile(){
+    if(isMobile){
+      setOpenMobile(false);
+    }
+  }
+
   return (
-    <Sidebar>
-      <div className="flex justify-end items-center pt-2 pr-2 text-gray-500">
-        <button
-          onClick={() => {
-            setOpen(false);
-            setOpenMobile(false);
-          }}
-        >
-          <X />
-        </button>
-      </div>
+    <Sidebar collapsible="icon" variant="sidebar">
       <SidebarContent>
         <SidebarGroup>
+        <SidebarGroupLabel className="text-md py-6">Store Saathi</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="p-2 m-2">
-                    <a href={item.url}>
+                  <SidebarMenuButton asChild className="p-2 m-2 transition-all active:scale-95 rounded-md focus:bg-gray-200"
+                  onClick={handleCloseSidebarMobile}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleLogout}  className="p-2 m-2 text-white bg-gray-900 rounded-md">
-                  <LogOut/>
+                <SidebarMenuButton
+                  onClick={handleLogout}
+                  className="p-2 m-2 text-white bg-gray-900 rounded-md"
+                >
+                  <LogOut />
                   Logout
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -41,7 +41,7 @@ export const items = pgTable("items", {
 });
 
 export const bills = pgTable("bills", {
-  id: uuid("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom() ,
   userId: uuid("user_id")
     .notNull()
     .references(() => {
@@ -56,19 +56,13 @@ export const billItems = pgTable(
   {
     billId: uuid("bill_id")
       .notNull()
-      .references(() => {
-        return bills.id;
-      }),
+      .references(() => bills.id),
     itemId: uuid("item_id")
       .notNull()
-      .references(() => {
-        return items.id;
-      }),
+      .references(() => items.id),
     itemQuantity: integer("item_quantity").notNull(),
   },
-  (table) => {
-    return {
-      id: primaryKey({ columns: [table.billId, table.itemId] }),
-    };
-  }
+  (table) => ({
+    id: primaryKey({ columns: [table.billId, table.itemId] }),
+  })
 );

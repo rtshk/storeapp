@@ -56,6 +56,34 @@ export default function SignUpPage() {
       if (insertInUserTable.error) {
         throw new Error(insertInUserTable.error.message);
       }
+      
+      const insertCategoriesResult = await supabase.from("category").insert( [
+        { user_id: userId, category_name: "Atta, Rice & Dal", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/atta-rice-dal.avif" },
+        { user_id: userId, category_name: "Baby Care", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/baby-care.avif" },
+        { user_id: userId, category_name: "Bakery & Biscuits", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/bakery-biscuits.avif" },
+        { user_id: userId, category_name: "Chicken, Meat & Fish", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/chicken-meat-fish.avif" },
+        { user_id: userId, category_name: "Cleaning Essentials", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/cleaning-essentials.avif" },
+        { user_id: userId, category_name: "Cold Drinks & Juices", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/cold-drinks-juices.avif" },
+        { user_id: userId, category_name: "Dairy & Breakfast", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/dairy-breakfast.avif" },
+        { user_id: userId, category_name: "Dry Fruits, Masala & Oil", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/dry-fruits-masala-oil.avif" },
+        { user_id: userId, category_name: "Fashion & Accessories", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/fashion-accessories.avif" },
+        { user_id: userId, category_name: "Home & Office", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/home-office.avif" },
+        { user_id: userId, category_name: "Instant & Frozen Food", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/instant-frozen-food.avif" },
+        { user_id: userId, category_name: "Munchies", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/munchies.avif" },
+        { user_id: userId, category_name: "Organic & Premium", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/organic-premium.avif" },
+        { user_id: userId, category_name: "Paan Corner", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/paan-corner.avif" },
+        { user_id: userId, category_name: "Personal Care", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/personal-care.avif" },
+        { user_id: userId, category_name: "Pet Care", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/pet-care.avif" },
+        { user_id: userId, category_name: "Pharma & Wellness", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/pharma-wellness.avif" },
+        { user_id: userId, category_name: "Sauces & Spreads", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/sauces-spreads.avif" },
+        { user_id: userId, category_name: "Sweet Tooth", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/sweet-tooth.avif" },
+        { user_id: userId, category_name: "Tea, Coffee & Health Drinks", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/tea-coffee-health-drinks.avif" },
+        { user_id: userId, category_name: "Vegetables & Fruits", category_img_url: "https://ifzagjrxuyxvjccbwsfu.supabase.co/storage/v1/object/public/category-images/vegetables-fruits.avif" },
+      ]);
+
+      if(insertCategoriesResult.error){
+        throw new Error(insertCategoriesResult.error.message);
+      }
 
       setShowOTPDrawer(true);
     } catch (error: any) {
