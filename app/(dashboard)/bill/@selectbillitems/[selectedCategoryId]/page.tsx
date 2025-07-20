@@ -1,52 +1,34 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import { SelectStockItem } from "./select-stock-item";
 
-type item = {
-  id: string;
-  item_name: string;
-  quantity: number;
-  image_url: string;
-  price: number;
-  user_id: string;
-  created_at: string;
-  category_id: string;
+type Props = {
+  params: {
+    selectedCategoryId: string;
+  };
 };
 
-export default function SelectCategoryItem() {
-  const params = useParams();
-  const [categoryName, setCategoryName] = useState("");
-  const [items, setItems] = useState<item[]>([]);
+export default async function SelectCategoryItem({ params }: Props) {
+  const supabase = await createClient();
 
-  useEffect(() => {
-    const fetchCategory = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("category")
-        .select("category_name")
-        .eq("id", params.selectedCategoryId)
-        .single();
+  // Get the category name
+  const { data: categoryData, error: categoryError } = await supabase
+    .from("category")
+    .select("category_name")
+    .eq("id", params.selectedCategoryId)
+    .single();
 
-      if (data) {
-        setCategoryName(data.category_name);
-      } else {
-        console.error("Error fetching category:", error);
-      }
-      const itemsResult = await supabase
-        .from("items")
-        .select()
-        .eq("category_id", params.selectedCategoryId);
-      if (itemsResult.error) {
-        throw new Error(itemsResult.error.message);
-      }
-      setItems(itemsResult?.data);
-    };
+  const categoryName = categoryData?.category_name || "Unknown Category";
 
-    fetchCategory();
-  }, [params.selectedCategoryId]);
+  // Get the items for the category
+  const { data: items, error: itemsError } = await supabase
+    .from("items")
+    .select()
+    .eq("category_id", params.selectedCategoryId);
+
+  if (itemsError) {
+    throw new Error(itemsError.message);
+  }
 
   return (
     <div>
@@ -55,8 +37,9 @@ export default function SelectCategoryItem() {
       </div>
 
       <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5 px-2 pt-2 mb-18">
-        {items.map((item) =>
-          item.quantity > 0 ? (
+        {items
+          ?.filter((item) => item.quantity > 0)
+          .map((item) => (
             <SelectStockItem
               key={item.id}
               id={item.id}
@@ -64,10 +47,7 @@ export default function SelectCategoryItem() {
               stock={item.quantity}
               price={item.price}
             />
-          ) : (
-            []
-          )
-        )}
+          ))}
       </div>
     </div>
   );

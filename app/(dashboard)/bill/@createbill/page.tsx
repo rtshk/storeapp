@@ -3,12 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BillitemsContext } from "@/lib/context/billitemsContext";
 import { createClient } from "@/lib/supabase/client";
-import { Plus,   ShoppingCart } from "lucide-react";
-import Link from "next/link";
+import { ShoppingCart } from "lucide-react";
 import React, { useContext } from "react";
 import { toast } from "sonner";
 
+
 export default function BillItems() {
+  
   const billItems = useContext(BillitemsContext);
   if (!billItems) return null;
 

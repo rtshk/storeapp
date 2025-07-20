@@ -1,42 +1,27 @@
-'use client';
+// app/(your-path)/select-category/page.tsx or any Server Component
 
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import { SelectStockCategoryItem } from './select-category-item';
+import { createClient } from '@/lib/supabase/server';
 
-export default function SelectCategoryBill() {
-  const [categoryData, setCategoryData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function SelectCategoryBill() {
+  const supabase = await createClient();
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const supabase = createClient(); // use browser version
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-      if (authError || !user) {
-        setLoading(false);
-        return;
-      }
+  if (!user) {
+    return <p className="p-4">You must be signed in to view categories.</p>;
+  }
 
-      const { data, error } = await supabase
-        .from('category')
-        .select()
-        .eq('user_id', user.id);
+  const { data: categoryData, error } = await supabase
+    .from('category')
+    .select()
+    .eq('user_id', user.id);
 
-      if (!error && data) {
-        setCategoryData(data);
-      }
-
-      setLoading(false);
-    };
-
-    fetchCategories();
-  }, []);
-
-  if (loading) return <p className="p-4">Loading categories...</p>;
+  if (error) {
+    return <p className="p-4">Error fetching categories.</p>;
+  }
 
   return (
     <div className="px-3">
@@ -53,7 +38,7 @@ export default function SelectCategoryBill() {
           />
         ))}
       </div>
-      <div className="my-16"></div>
+      <div className="my-16" />
     </div>
   );
 }
