@@ -5,8 +5,9 @@ import Link from "next/link";
 const navItems = [
   { icon: <House />, href: "/" },
   { icon: <Box />, href: "/stock" },
+  { icon: <Plus size={46} className="bg-gray-900 p-1 rounded-full text-white" />, href: "/bill" },
   { icon: <ChartColumn />, href: "/" },
-  { icon: <ClipboardList />, href: "/bill" },
+  { icon: <ClipboardList />, href: "/createBillMobile" },
 ];
 
 const FooterSection = () => {

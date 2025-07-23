@@ -1,3 +1,5 @@
+import React from "react";
+
 export default function BillLayout({
   createbill,
   selectbillitems,
@@ -6,9 +8,9 @@ export default function BillLayout({
   selectbillitems: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between ">
+    <div className="md:flex md:justify-between  ">
       <div className="flex-1">{selectbillitems}</div>
-      <div>{createbill}</div>
+      <div className="hidden md:block">{createbill}</div>
     </div>
   );
 }
