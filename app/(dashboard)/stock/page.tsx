@@ -1,13 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { StockCategoryItem } from "./stock-category-item";
+import StockCategoryDialog from "./stock-category-dialog";
 
 
 export default async function StockCategory() {
-
   const supabase = await createClient();
-  const {data : {user}} = await supabase.auth.getUser()
-  const categoryResult = await supabase.from('category').select().eq('user_id', user?.id);
-
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const categoryResult = await supabase
+    .from("category")
+    .select()
+    .eq("user_id", user?.id);
 
   return (
     <div className="px-3">
@@ -26,7 +30,7 @@ export default async function StockCategory() {
           );
         })}
       </div>
-      <div className="my-16"></div>
+      <StockCategoryDialog/>
     </div>
   );
 }

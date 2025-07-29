@@ -1,105 +1,108 @@
-"use client"
-import { Button } from "@/components/ui/button";
+import { revalidatePath } from "next/cache";
 import { Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
+import { Skeleton } from "@/components/ui/skeleton";
+import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 
+async function addItem(formData: FormData) {
+  "use server";
+  const supabase = await createClient();
 
-export function StockDialog (){
-  const params = useParams();
+  const itemName = formData.get("itemName") as string;
+  const quantity = Number(formData.get("quantity"));
+  const price = Number(formData.get("price"));
+  const categoryId = String(formData.get("categoryId"));
 
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [itemName, setItemName] = useState<string>("");
-  const [quantity, setQuantity] = useState<string>("");
-  const [price, setPrice] = useState<string>("");
+  const userResult = await supabase.auth.getUser();
+  const userId = userResult.data.user?.id;
 
+  const { error } = await supabase.from("items").insert({
+    item_name: itemName,
+    quantity,
+    price,
+    category_id: categoryId,
+    user_id: userId,
+  });
 
+  if (error) {
+    console.error("Insert failed:", error.message);
+  }
+  revalidatePath("/stock");
+}
 
-  const handleAddItem = async () => {
-    const supabase = createClient();
-    const userResult = await supabase.auth.getUser();
-    const { error } = await supabase.from("items").insert({
-      item_name: itemName,
-      quantity: Number(quantity),
-      price: Number(price),
-      category_id: params.category,
-      user_id: userResult.data.user?.id,
-    });
+export async function StockDialog({
+  params,
+}: {
+  params: Promise<{ category: string }>;
+}) {
+  const { category } = await params;
+  console.log(category);
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="fixed bottom-18 right-4">
+          <Plus className="mr-1" />
+          Add
+        </Button>
+      </DialogTrigger>
+      <DialogTitle></DialogTitle>
+      <DialogContent className="sm:max-w-[425px] md:h-[600px]">
+        <form action={addItem}>
+          <Input
+            id="categoryId"
+            name="categoryId"
+            className="hidden"
+            defaultValue={category}
+            required
+          />
+          <div className="pt-2">
+            <div className="">
+              <Label htmlFor="item-name">Item Name</Label>
+              <Input id="item-name" name="itemName" className="mt-2" required />
+            </div>
 
-    if (error) {
-      console.error("Insert failed:", error.message);
-    } else {
-      setItemName("");
-      setQuantity("");
-      setPrice("");
-    }
-  };
-    return(
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
-        <form>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="fixed bottom-18 right-4">
-              <Plus className="mr-1" />
-              Add
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add Item</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4">
-              <div className="grid gap-3">
-                <Label htmlFor="item-name">Item Name</Label>
-                <Input
-                  id="item-name"
-                  name="name"
-                  value={itemName}
-                  onChange={(e) => setItemName(e.target.value)}
-                />
-              </div>
-              <div className="flex justify-between">
-                <div className="grid gap-3 w-[50%]">
-                  <Label htmlFor="quantity">Quantity</Label>
-                  <Input
-                    id="quantity"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                  />
+            <div className="flex mt-4">
+              <div className="pr-2">
+                <div>
+                  <Label htmlFor="quantity" className="pb-2">
+                    Quantity
+                  </Label>
+                  <Input id="quantity" name="quantity" type="number" required />
                 </div>
-                <div className="grid gap-3 w-[50%]">
-                  <Label htmlFor="image-upload">Upload Image</Label>
+                <div className="mt-2 ">
+                  <Label htmlFor="price" className="pb-2">
+                    Price
+                  </Label>
+                  <Input id="price" name="price" required />
                 </div>
               </div>
-              <div className="grid gap-3 w-[50%]">
-                <Label htmlFor="price">Price</Label>
-                <Input
-                  id="price"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                />
+              <div>
+                <Label htmlFor="image-upload" className="mb-2">
+                  Image
+                </Label>
+                <Skeleton className="w-24 h-24" />
               </div>
             </div>
-            <DialogFooter>
-              <Button type="submit" className="w-18" onClick={()=>{
-                handleAddItem();
-                setIsDialogOpen(false);
-              }}>
+          </div>
+
+          <DialogFooter>
+            <DialogClose>
+              <Button type="submit" className="w-18 md:fixed bottom-4 right-4">
                 Submit
               </Button>
-            </DialogFooter>
-          </DialogContent>
+            </DialogClose>
+          </DialogFooter>
         </form>
-      </Dialog>
-    )
+      </DialogContent>
+    </Dialog>
+  );
 }

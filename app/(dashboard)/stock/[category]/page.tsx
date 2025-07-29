@@ -3,9 +3,9 @@ import { StockItem } from "./stock-items";
 import { StockDialog } from "./stock-dialog";
 
 type Props = {
-  params: {
+  params:  Promise<{
     category: string;
-  };
+  }>;
 };
 
 type item = {
@@ -21,12 +21,12 @@ type item = {
 
 export default async function Category({ params }: Props) {
   const supabase = await createClient();
-
+  const {category} = await params;
   // Fetch category name
   const { data: categoryData, error: categoryError } = await supabase
     .from("category")
     .select("category_name")
-    .eq("id", params.category)
+    .eq("id", category)
     .single();
 
   if (categoryError) {
@@ -38,7 +38,7 @@ export default async function Category({ params }: Props) {
   const { data: items, error: itemsError } = await supabase
     .from("items")
     .select()
-    .eq("category_id", params.category);
+    .eq("category_id", category);
 
   if (itemsError) {
     console.error("Error fetching items:", itemsError.message);
@@ -61,7 +61,7 @@ export default async function Category({ params }: Props) {
           />
         ))}
       </div>
-      <StockDialog />
+        <StockDialog params={params}/>
     </div>
   );
 }

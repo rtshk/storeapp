@@ -30,7 +30,7 @@ export function SelectStockItem({
   }
 
   return (
-    <div className="p-4 flex flex-col items-center justify-center rounded-md bg-gray-50">
+    <div className="p-4 flex flex-col items-center justify-center rounded-md bg-gray-50 min-w-40">
       <div className="bg-gray-100 h-36 w-36 rounded-md"></div>
       <p className="text-start w-full font-semibold ml-6">{itemName}</p>
       <p className="py-1 px-3 text-xs font-semibold text-start w-full">
