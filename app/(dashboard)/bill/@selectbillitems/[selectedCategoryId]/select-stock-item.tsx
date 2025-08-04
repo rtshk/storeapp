@@ -31,7 +31,6 @@ export function SelectStockItem({
 
   return (
     <div className="p-4 flex flex-col items-center justify-center rounded-md bg-gray-50 min-w-40">
-      <div className="bg-gray-100 h-36 w-36 rounded-md"></div>
       <p className="text-start w-full font-semibold ml-6">{itemName}</p>
       <p className="py-1 px-3 text-xs font-semibold text-start w-full">
         ₹{price}
@@ -39,7 +38,7 @@ export function SelectStockItem({
       <div className="w-full flex justify-between">
         <div className="mx-3">
           <div className="flex">
-            <p className="font-semibold text-sm mt-0.5">Qty</p>
+            <p className="font-semibold text-sm mt-0.5 pr-0.5">Qty</p>
             <input
               value={quantity}
               onChange={(e) => {
@@ -48,12 +47,12 @@ export function SelectStockItem({
               className="w-8 px-1 text-xs font-medium bg-gray-200 rounded-md ml-1 text-center"
             />
           </div>
-          <div className="mt-1">
+          <div className="mt-1 ">
             <button
               onClick={() => {
                 setQuantity((prev) => Math.max(0, prev - 1));
               }}
-              className="border border-[#862716] bg-[#fff9f6] text-[#862716] w-7 rounded-md mr-1 active:scale-90 transition-all"
+              className=" shadow-xs bg-[#ffffff] text-[#000000] w-7 rounded-md mr-1 active:scale-90 transition-all"
               disabled={isDisable}
             >
               -
@@ -67,7 +66,7 @@ export function SelectStockItem({
                   return Math.min(prev + 1, stock)
                 });
               }}
-              className="border border-[#328616] bg-[#F6FFF9] text-[#328616] w-7 rounded-md active:scale-90 transition-all"
+              className=" bg-[#272727] text-[#ffffff] w-7 rounded-md active:scale-90 transition-all"
               disabled={isDisable}
             >
               +
@@ -76,7 +75,7 @@ export function SelectStockItem({
         </div>
         <Button
           className="my-3"
-          variant="green"
+          variant="outline"
           size="sm"
           onClick={handleAddBillItem}
           disabled={isDisable}

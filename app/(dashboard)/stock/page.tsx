@@ -25,12 +25,12 @@ export default async function StockCategory() {
               key={dataItem.id}
               id={dataItem.id}
               categoryName={dataItem.category_name}
-              categoryImageURL={dataItem.category_img_url}
             />
           );
         })}
       </div>
       <StockCategoryDialog/>
+      <div className="mb-16"></div>
     </div>
   );
 }

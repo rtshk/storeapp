@@ -9,8 +9,7 @@ export default function Loading() {
       <div className="grid grid-cols-3 lg:grid-cols-7 md:grid-cols-4 gap-4">
         {Array.from({ length: 21 }).map((_, i) => (
           <div key={i} className="flex flex-col items-center gap-2 p-2">
-            <Skeleton className="w-16 h-16 rounded-md" />
-            <Skeleton className="w-20 h-4" />             
+            <Skeleton className="w-24 md:w-32 h-16 rounded-sm" />
           </div>
         ))}
       </div>

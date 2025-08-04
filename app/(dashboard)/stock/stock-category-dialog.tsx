@@ -15,7 +15,6 @@ import {
   
   import { revalidatePath } from "next/cache";
   import { createClient } from "@/lib/supabase/server";
-import UploadImage from "./upload-image";
   
   /** ---------- server action ---------- */
   async function addCategory(formData: FormData) {
@@ -47,7 +46,7 @@ import UploadImage from "./upload-image";
   /** ---------- server component ---------- */
   export default function StockCategoryDialog() {
     return (
-      <div className="fixed bottom-4 right-4">
+      <div className="fixed bottom-20 right-4 md:bottom-4">
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline">
@@ -75,11 +74,6 @@ import UploadImage from "./upload-image";
                   />
                 </div>
   
-                {/* Category image (placeholder for now) */}
-                <div>
-                  <Label htmlFor="category-image">Image (coming soon)</Label>
-                  <UploadImage/>
-                </div>
               </div>
   
               <DialogFooter className="mt-6">

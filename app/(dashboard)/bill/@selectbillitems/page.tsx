@@ -26,7 +26,7 @@ export default async function SelectCategoryBill() {
   return (
     <div className="px-3">
       <h2 className="font-bold text-2xl py-3 px-4 mt-3 mb-2">
-        Add items to bill
+        Select Category
       </h2>
       <div className="grid grid-cols-3 lg:grid-cols-7 md:grid-cols-4">
         {categoryData.map((dataItem) => (
@@ -34,7 +34,6 @@ export default async function SelectCategoryBill() {
             key={dataItem.id}
             id={dataItem.id}
             categoryName={dataItem.category_name}
-            categoryImageURL={dataItem.category_img_url}
           />
         ))}
       </div>

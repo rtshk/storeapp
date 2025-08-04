@@ -10,12 +10,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="absolute w-full">
       <SidebarProvider>
         <AppSidebar />
-        <main className="w-full">
-          <nav className="flex items-center justify-between p-2">
-            <SidebarTrigger />
+        <main className="w-full max-h-screen">
+          <nav className="w-full sticky top-0 flex items-center justify-between h-12 p-2 backdrop-blur-xs shadow-md">
+            <div>
+              <SidebarTrigger />
+            </div>
             <div className="flex items-center">
               <Bell className="mx-3" />
             </div>

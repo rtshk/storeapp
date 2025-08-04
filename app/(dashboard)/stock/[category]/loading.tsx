@@ -16,7 +16,6 @@ export default function Loading() {
             key={index}
             className="p-4 flex flex-col items-center justify-center rounded-md bg-gray-50"
           >
-            <Skeleton className="bg-gray-200 h-36 w-36 rounded-md" />
 
             <div className="w-full ml-6 mt-2">
               <Skeleton className="h-4 w-3/4 mb-1" />
